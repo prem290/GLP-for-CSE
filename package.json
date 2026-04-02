@@ -1,0 +1,11 @@
+{
+  "name": "codequest",
+  "version": "1.0.0",
+  "description": "CodeQuest - Gamified Learning Platform for CSE Students",
+  "scripts": {
+    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && node server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  }
+}
