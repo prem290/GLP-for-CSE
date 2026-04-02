@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+  "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+  "dev:backend": "cd backend && node server.js",
+  "dev:frontend": "cd frontend && npm run dev",
+  "build": "cd frontend && npm install && npm run build",
+  "install:all": "cd backend && npm install && cd ../frontend && npm install"
+},
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/vite": "^4.2.2",
