@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Flame, Star, Trophy, ArrowRight } from "lucide-react";
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api";
+import { AuthContext } from "../context/AuthContext";
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
+  const { user, fetchUser } = useContext(AuthContext);
 
   useEffect(() => {
-    // Dummy fetch user details
-    axios.get(`${API_URL}/auth/me`).then((res) => {
-      setUser(res.data);
-    }).catch(err => {
-      console.error(err);
-      // Fallback
-      setUser({ id: 1, name: "Test User", xp: 1200, level: 5, streak: 3, badges: ["First Blood", "Code Master"] });
-    });
+    fetchUser();
   }, []);
 
   if (!user) return <div className="text-center py-20 animate-pulse">Loading...</div>;
 
-  const xpProgress = (user.xp % 1000) / 10; // Assuming 1000xp per level
+  const xpProgress = (user.xp % 100) / 1; // Assuming 100xp per level now
 
   return (
     <div className="space-y-8">
@@ -55,7 +46,7 @@ const Dashboard = () => {
           <div className="p-3 bg-accent/20 rounded-full"><Trophy className="text-accent" /></div>
           <div>
             <p className="text-muted text-sm mb-1">Badges Earned</p>
-            <div className="font-bold text-2xl">{user.badges.length}</div>
+            <div className="font-bold text-2xl">{user.badges?.length || 0}</div>
           </div>
         </motion.div>
       </div>

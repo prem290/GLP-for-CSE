@@ -1,10 +1,19 @@
-import React from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Code, Trophy, User } from "lucide-react";
+import React, { useContext } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, BookOpen, Trophy, User, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={20} /> },
     { name: "Subjects", path: "/subjects", icon: <BookOpen size={20} /> },
@@ -17,7 +26,7 @@ const Navbar = () => {
       <Link to="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
         CodeQuest
       </Link>
-      <div className="flex gap-6">
+      <div className="flex gap-4 md:gap-6 items-center">
         {navItems.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
           return (
@@ -33,6 +42,15 @@ const Navbar = () => {
             </Link>
           );
         })}
+        {user && (
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-danger hover:bg-danger/10 transition-colors"
+          >
+            <LogOut size={20} />
+            <span className="hidden md:block font-medium">Logout</span>
+          </button>
+        )}
       </div>
     </nav>
   );

@@ -1,30 +1,49 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-
-// Mock user data
-const users = [];
+const auth = require("../middleware/auth");
+const { users } = require("../mockDB");
 
 router.post("/register", (req, res) => {
   const { name, email, password } = req.body;
-  const newUser = { id: users.length + 1, name, email, password, xp: 0, level: 1, streak: 0, badges: [] };
+  if (!name || !email || !password) return res.status(400).json({ message: "Fill all fields" });
+  
+  if (users.find(u => u.email === email)) {
+    return res.status(400).json({ message: "User already exists" });
+  }
+
+  const newUser = { 
+    id: users.length + 1, 
+    name, 
+    email, 
+    password, 
+    xp: 0, 
+    level: 1, 
+    streak: 0, 
+    badges: [] 
+  };
   users.push(newUser);
+  
   const token = jwt.sign({ id: newUser.id }, "secret123", { expiresIn: "1d" });
   res.json({ token, user: newUser });
 });
 
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
-  // Dummy authentication
-  const token = jwt.sign({ id: 1 }, "secret123", { expiresIn: "1d" });
-  res.json({ 
-    token, 
-    user: { id: 1, name: "Test User", email, xp: 1200, level: 5, streak: 3, badges: ["First Blood", "Code Master"] } 
-  });
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) {
+    return res.status(400).json({ message: "Invalid credentials" });
+  }
+
+  const token = jwt.sign({ id: user.id }, "secret123", { expiresIn: "1d" });
+  res.json({ token, user });
 });
 
-router.get("/me", (req, res) => {
-  res.json({ id: 1, name: "Test User", email: "test@test.com", xp: 1200, level: 5, streak: 3, badges: ["First Blood", "Code Master"] });
+// Protected route to get current user data
+router.get("/me", auth, (req, res) => {
+  const user = users.find(u => u.id === req.user.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
+  res.json(user);
 });
 
 module.exports = router;

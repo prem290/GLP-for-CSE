@@ -21,7 +21,6 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Background blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-accent/20 rounded-full blur-[100px] pointer-events-none" />
 
@@ -43,12 +42,12 @@ const Landing = () => {
         </motion.p>
 
         <motion.div variants={item} className="flex gap-4 justify-center mb-20">
-          <Link to="/dashboard" className="px-8 py-4 bg-primary text-white rounded-full font-semibold hover:bg-primary/90 flex items-center gap-2 transition-transform hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+          <Link to="/auth" className="px-8 py-4 bg-primary text-white rounded-full font-semibold hover:bg-primary/90 flex items-center gap-2 transition-transform hover:scale-105 shadow-[0_0_20px_rgba(59,130,246,0.4)]">
             Start Learning <ChevronRight size={20} />
           </Link>
-          <button className="px-8 py-4 glass text-text rounded-full font-semibold hover:bg-card/80 transition-transform hover:scale-105">
+          <Link to="/auth" className="px-8 py-4 glass text-text rounded-full font-semibold hover:bg-card/80 transition-transform hover:scale-105 block">
             Log In
-          </button>
+          </Link>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 text-left">

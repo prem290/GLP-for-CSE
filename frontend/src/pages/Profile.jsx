@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Shield, Medal, Flame } from "lucide-react";
 import { Line } from "react-chartjs-2";
@@ -14,6 +13,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
+import { AuthContext } from "../context/AuthContext";
 
 ChartJS.register(
   CategoryScale,
@@ -26,17 +26,11 @@ ChartJS.register(
   Filler
 );
 
-const API_URL = "http://localhost:5000/api";
-
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const { user, fetchUser } = useContext(AuthContext);
 
   useEffect(() => {
-    axios.get(`${API_URL}/auth/me`).then(res => {
-      setUser(res.data);
-    }).catch(err => {
-      setUser({ id: 1, name: "Test User", email: "test@example.com", xp: 1200, level: 5, streak: 3, badges: ["First Blood", "Code Master", "Bug Hunter"] });
-    });
+    fetchUser();
   }, []);
 
   if (!user) return <div className="text-center py-20 animate-pulse">Loading Profile...</div>;
@@ -46,7 +40,7 @@ const Profile = () => {
     datasets: [
       {
         label: 'XP Gained',
-        data: [120, 190, 50, 200, 300, 150, 400],
+        data: [10, 20, 5, 0, 30, 0, user.xp],
         borderColor: '#3b82f6',
         backgroundColor: 'rgba(59, 130, 246, 0.2)',
         tension: 0.4,
@@ -68,12 +62,11 @@ const Profile = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
-      {/* Header */}
       <div className="glass p-8 rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
         
         <div className="w-32 h-32 rounded-full border-4 border-primary bg-card flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.3)] z-10">
-          <span className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">
+          <span className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent uppercase">
             {user.name.charAt(0)}
           </span>
         </div>
@@ -93,28 +86,30 @@ const Profile = () => {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Badges section */}
         <div className="glass p-8 rounded-3xl">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2"><Shield className="text-accent" /> Earned Badges</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {user.badges.map((badge, i) => (
-              <motion.div 
-                key={i}
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="bg-card p-4 rounded-2xl border border-border text-center group relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Medal className="mx-auto text-accent mb-2 group-hover:drop-shadow-[0_0_10px_rgba(139,92,246,0.8)] transition-all" size={32} />
-                <p className="text-sm font-semibold">{badge}</p>
-              </motion.div>
-            ))}
-          </div>
+          {(!user.badges || user.badges.length === 0) ? (
+            <p className="text-muted italic">No badges earned yet. Take some quizzes!</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {user.badges.map((badge, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-card p-4 rounded-2xl border border-border text-center group relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Medal className="mx-auto text-accent mb-2 group-hover:drop-shadow-[0_0_10px_rgba(139,92,246,0.8)] transition-all" size={32} />
+                  <p className="text-sm font-semibold">{badge}</p>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Activity Chart */}
         <div className="glass p-8 rounded-3xl">
           <h2 className="text-2xl font-bold mb-6">Activity (XP)</h2>
           <div className="relative h-64 w-full">
